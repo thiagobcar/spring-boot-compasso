@@ -2,6 +2,7 @@ package com.compassouol.springbootcompasso.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,24 +22,24 @@ public class CidadeService {
 	private Logger logger = LoggerFactory.getLogger(CidadeService.class);
 
 	public Cidade buscarCidadePorId(Long id) {
+		AtomicReference<Cidade> cidade = new AtomicReference<>();
 		try {
 			logger.debug("Inicio busca cidade por id '" + id + "'");
 
 			Optional<Cidade> optCidade = cidadeRepository.findById(id);
 
 			optCidade.ifPresentOrElse(c -> {
+				cidade.set(c);
 				logger.debug("Cidade com id '" + id + "' encontrada");
 				logger.debug(c.toString());
 			}, () -> logger.debug("Cidade com id '" + id + "' nao encontrada"));
 
 			logger.debug("Fim busca cidade por id '" + id + "'");
-
-			return optCidade.get();
 		} catch (Exception e) {
 			logger.error("Falha ao buscar cidade por id '" + id + "'", e);
 		}
 
-		return null;
+		return cidade.get();
 	}
 
 	public List<Cidade> buscarCidadePorNome(String nome) {
