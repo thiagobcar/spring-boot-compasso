@@ -15,4 +15,6 @@ public interface CidadeRepository extends CrudRepository<Cidade, Long> {
 	
 	List<Cidade> findByEstado(Estado estado);
 
+	List<Cidade> findByNomeAndEstado(String nome, Estado estado);
+
 }
