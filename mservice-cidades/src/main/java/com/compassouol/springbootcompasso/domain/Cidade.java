@@ -1,32 +1,38 @@
 package com.compassouol.springbootcompasso.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "nome", "estado" }) })
 public class Cidade {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	@Column(nullable = false)
 	private String nome;
+	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Estado estado;
 
 	public Cidade() {
 		super();
 	}
-	
+
 	public Cidade(String nome, Estado estado) {
 		super();
 		this.nome = nome;
 		this.estado = estado;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -38,15 +44,15 @@ public class Cidade {
 	public String getNome() {
 		return nome;
 	}
-	
+
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
-	
+
 	public Estado getEstado() {
 		return estado;
 	}
-	
+
 	public void setEstado(Estado estado) {
 		this.estado = estado;
 	}
