@@ -1,6 +1,6 @@
 package com.compassouol.springbootcompasso.mserviceclientes.dto;
 
-public class CidadeDTO {
+public class CidadeDTO extends MessageDTO {
 
 	private Long id;
 	private String nome;
@@ -8,6 +8,10 @@ public class CidadeDTO {
 
 	public CidadeDTO() {
 		super();
+	}
+
+	public CidadeDTO(String message) {
+		super(message);
 	}
 
 	public CidadeDTO(Long id, String nome, String estado) {

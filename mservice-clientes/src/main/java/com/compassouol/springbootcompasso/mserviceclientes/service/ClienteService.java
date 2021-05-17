@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.compassouol.springbootcompasso.mserviceclientes.domain.Cliente;
+import com.compassouol.springbootcompasso.mserviceclientes.dto.CidadeDTO;
 import com.compassouol.springbootcompasso.mserviceclientes.dto.ClienteDTO;
 import com.compassouol.springbootcompasso.mserviceclientes.repository.ClienteRepository;
+import com.compassouol.springbootcompasso.mserviceclientes.service.exception.CidadeService;
 import com.compassouol.springbootcompasso.mserviceclientes.service.exception.ClienteServiceException;
 
 @Service
@@ -20,6 +22,9 @@ public class ClienteService {
 
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private CidadeService cidadeService;
 
 	private Logger logger = LoggerFactory.getLogger(ClienteService.class);
 
@@ -42,7 +47,7 @@ public class ClienteService {
 			throw new ClienteServiceException("Falha ao buscar cliente por id '" + id + "'. " + e.getMessage(), e);
 		}
 
-		return ClienteDTO.fromDomain(cliente.get());
+		return clientDTOFromDomain(cliente.get());
 	}
 
 	public List<ClienteDTO> buscarClientePorNome(String nome) throws ClienteServiceException {
@@ -65,7 +70,7 @@ public class ClienteService {
 
 			logger.debug("Fim busca cliente por nome: '" + nome + "'");
 
-			List<ClienteDTO> listDto = listClientes.stream().map(c -> ClienteDTO.fromDomain(c))
+			List<ClienteDTO> listDto = listClientes.stream().map(c -> clientDTOFromDomain(c))
 					.collect(Collectors.toList());
 
 			return listDto;
@@ -89,7 +94,7 @@ public class ClienteService {
 			});
 			logger.debug("Fim remoção cliente id '" + id + "'");
 
-			return ClienteDTO.fromDomain(clienteRemovido.get());
+			return clientDTOFromDomain(clienteRemovido.get());
 		} catch (Exception e) {
 			logger.error("Falha ao remover cliente de id '" + id + "'", e);
 			throw new ClienteServiceException("Falha ao remover cliente de id '" + id + "'. " + e.getMessage(), e);
@@ -123,7 +128,7 @@ public class ClienteService {
 		Cliente cliente = optCliente.get();
 		cliente.setNome(nome);
 
-		return ClienteDTO.fromDomain(salvarCliente(cliente));
+		return clientDTOFromDomain(salvarCliente(cliente));
 	}
 
 	public ClienteDTO alterarCliente(ClienteDTO clienteDTO) throws ClienteServiceException {
@@ -147,14 +152,14 @@ public class ClienteService {
 			throw new ClienteServiceException("Cliente " + cliente + " não encontrado.");
 		}
 
-		return ClienteDTO.fromDomain(salvarCliente(optCliente.get()));
+		return clientDTOFromDomain(salvarCliente(optCliente.get()));
 	}
 
 	public ClienteDTO salvarCliente(ClienteDTO clienteDTO) throws ClienteServiceException {
 		Cliente clienteSalvar = ClienteDTO.toDomain(clienteDTO);
 		clienteSalvar.setId(null);
 		Cliente clienteSalvo = salvarCliente(clienteSalvar);
-		return ClienteDTO.fromDomain(clienteSalvo);
+		return clientDTOFromDomain(clienteSalvo);
 	}
 
 	public Cliente salvarCliente(Cliente cliente) throws ClienteServiceException {
@@ -167,6 +172,18 @@ public class ClienteService {
 			logger.error("Falha ao salvar " + cliente, e);
 			throw new ClienteServiceException("Falha ao salvar " + cliente + ". " + e.getMessage(), e);
 		}
+	}
+
+	private ClienteDTO clientDTOFromDomain(Cliente cliente) {
+		if(cliente == null) {
+			return null;
+		}
+		ClienteDTO clienteDTO = ClienteDTO.fromDomain(cliente);
+		if(clienteDTO.getCidade() != null && clienteDTO.getCidade().getId() != null) {
+			CidadeDTO cidadeDTO = cidadeService.buscarCidadePorId(clienteDTO.getCidade().getId());
+			clienteDTO.setCidade(cidadeDTO);
+		}
+		return clienteDTO;
 	}
 
 }
