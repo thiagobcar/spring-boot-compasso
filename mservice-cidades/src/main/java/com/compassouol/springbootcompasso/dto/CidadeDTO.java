@@ -1,4 +1,7 @@
-package com.compassouol.springbootcompasso.mserviceclientes.dto;
+package com.compassouol.springbootcompasso.dto;
+
+import com.compassouol.springbootcompasso.domain.Cidade;
+import com.compassouol.springbootcompasso.domain.Estado;
 
 public class CidadeDTO extends MessageDTO {
 
@@ -43,6 +46,22 @@ public class CidadeDTO extends MessageDTO {
 
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+
+	public static Cidade toDomain(CidadeDTO dto) {
+		if (dto == null) {
+			return null;
+		}
+		return new Cidade(dto.getId(), dto.getNome(), Estado.valueOf(dto.getEstado()));
+	}
+
+	public static CidadeDTO fromDomain(Cidade domain) {
+		if (domain == null) {
+			return null;
+		}
+
+		return new CidadeDTO(domain.getId(), domain.getNome(),
+				domain.getEstado() != null ? domain.getEstado().name() : null);
 	}
 
 }

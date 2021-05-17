@@ -1,6 +1,9 @@
 package com.compassouol.springbootcompasso.controller;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.compassouol.springbootcompasso.domain.Cidade;
-import com.compassouol.springbootcompasso.dto.ResponseMessageDTO;
+import com.compassouol.springbootcompasso.dto.CidadeDTO;
 import com.compassouol.springbootcompasso.service.CidadeService;
 import com.compassouol.springbootcompasso.service.exception.CidadeServiceException;
 
@@ -23,61 +26,61 @@ public class CidadeController {
 	private CidadeService cidadeService;
 
 	@PostMapping(value = "/cidade")
-	public ResponseEntity<ResponseMessageDTO<Cidade>> salvarCidade(@RequestBody Cidade cidade) {
+	public ResponseEntity<CidadeDTO> salvarCidade(@RequestBody Cidade cidade) {
 		try {
-			return ResponseEntity.ok(new ResponseMessageDTO<Cidade>(cidadeService.salvarCidade(cidade), "sucesso"));
+			CidadeDTO salva = cidadeService.salvarCidade(cidade);
+			salva.setMessage("Cidade salva com sucesso.");
+			return ResponseEntity.ok(salva);
 		} catch (CidadeServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessageDTO<Cidade>(null, e.getMessage()));
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new CidadeDTO(e.getMessage()));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessageDTO<Cidade>(null, e.getMessage()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new CidadeDTO(e.getMessage()));
 		}
 	}
 
 	@GetMapping(value = "/cidade/{id}")
-	public ResponseEntity<ResponseMessageDTO<Cidade>> buscarCidadePorId(@PathVariable("id") Long id) {
+	public ResponseEntity<CidadeDTO> buscarCidadePorId(@PathVariable("id") Long id) {
 		try {
-			Cidade cidade = cidadeService.buscarCidadePorId(id);
-			if (cidade != null) {				
-				return ResponseEntity.ok(new ResponseMessageDTO<Cidade>(cidade, "sucesso"));
-			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessageDTO<Cidade>(null, "Não encontrado."));
+			CidadeDTO cidade = cidadeService.buscarCidadePorId(id);
+			if (cidade == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CidadeDTO("Não encontrada."));
 			}
+			return ResponseEntity.ok(cidade);
 		} catch (CidadeServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessageDTO<Cidade>(null, e.getMessage()));
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new CidadeDTO(e.getMessage()));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessageDTO<Cidade>(null, e.getMessage()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new CidadeDTO(e.getMessage()));
 		}
 	}
 
 	@GetMapping(value = "/cidade/buscarPorNome/{nome}")
-	public ResponseEntity<ResponseMessageDTO<List<Cidade>>> buscarPorNome(@PathVariable("nome") String nome) {
+	public ResponseEntity<List<CidadeDTO>> buscarPorNome(@PathVariable("nome") String nome) {
 		try {
-			List<Cidade> cidadesPorNome = cidadeService.buscarCidadePorNome(nome);
-			if (cidadesPorNome.size() > 0) {				
-				return ResponseEntity.ok(new ResponseMessageDTO<List<Cidade>>(cidadesPorNome, "sucesso"));
+			List<CidadeDTO> cidadesPorNome = cidadeService.buscarCidadePorNome(nome);
+			if (cidadesPorNome.size() == 0) {				
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Stream.of(new CidadeDTO("Não encontrada.")).collect(toList()));
 			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessageDTO<List<Cidade>>(cidadesPorNome, "Não encontrado."));
 			}
+			return ResponseEntity.ok(cidadesPorNome);
 		} catch (CidadeServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessageDTO<List<Cidade>>(null, e.getMessage()));
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(Stream.of(new CidadeDTO(e.getMessage())).collect(toList()));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessageDTO<List<Cidade>>(null, e.getMessage()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Stream.of(new CidadeDTO(e.getMessage())).collect(toList()));
 		}
 	}
 
 	@GetMapping(value = "/cidade/buscarPorEstado/{estado}")
-	public ResponseEntity<ResponseMessageDTO<List<Cidade>>> buscarPorEstado(@PathVariable("estado") String estado) {
+	public ResponseEntity<List<CidadeDTO>> buscarPorEstado(@PathVariable("estado") String estado) {
 		try {
-			List<Cidade> cidadesPorEstado = cidadeService.buscarCidadePorEstado(estado);
-			if (cidadesPorEstado.size() > 0) {				
-				return ResponseEntity.ok(new ResponseMessageDTO<List<Cidade>>(cidadesPorEstado, "sucesso"));
-			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessageDTO<List<Cidade>>(cidadesPorEstado, "Não encontrado."));
+			List<CidadeDTO> cidadesPorEstado = cidadeService.buscarCidadePorEstado(estado);
+			if (cidadesPorEstado.size() == 0) {				
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Stream.of(new CidadeDTO("Não encontrada.")).collect(toList()));
 			}
+			return ResponseEntity.ok(cidadesPorEstado);
 		} catch (CidadeServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessageDTO<List<Cidade>>(null, e.getMessage()));
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(Stream.of(new CidadeDTO(e.getMessage())).collect(toList()));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessageDTO<List<Cidade>>(null, e.getMessage()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Stream.of(new CidadeDTO(e.getMessage())).collect(toList()));
 		}
 	}
 
