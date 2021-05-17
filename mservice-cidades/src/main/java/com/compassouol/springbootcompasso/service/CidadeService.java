@@ -3,6 +3,7 @@ package com.compassouol.springbootcompasso.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.compassouol.springbootcompasso.domain.Cidade;
 import com.compassouol.springbootcompasso.domain.Estado;
+import com.compassouol.springbootcompasso.dto.CidadeDTO;
 import com.compassouol.springbootcompasso.repository.CidadeRepository;
 import com.compassouol.springbootcompasso.service.exception.CidadeServiceException;
 
@@ -22,7 +24,7 @@ public class CidadeService {
 
 	private Logger logger = LoggerFactory.getLogger(CidadeService.class);
 
-	public Cidade buscarCidadePorId(Long id) throws CidadeServiceException {
+	public CidadeDTO buscarCidadePorId(Long id) throws CidadeServiceException {
 		logger.debug("Inicio busca cidade por id '" + id + "'");
 		AtomicReference<Cidade> cidade = new AtomicReference<>();
 		try {
@@ -41,10 +43,10 @@ public class CidadeService {
 			throw new CidadeServiceException("Falha ao buscar cidade por id '" + id + "'", e);
 		}
 
-		return cidade.get();
+		return CidadeDTO.fromDomain(cidade.get());
 	}
 
-	public List<Cidade> buscarCidadePorNome(String nome) throws CidadeServiceException {
+	public List<CidadeDTO> buscarCidadePorNome(String nome) throws CidadeServiceException {
 		try {
 			logger.debug("Inicio busca cidade por nome '" + nome + "'");
 
@@ -59,14 +61,14 @@ public class CidadeService {
 
 			logger.debug("Fim busca cidade por nome '" + nome + "'");
 
-			return listCidade;
+			return listCidadeToListCidadeDTO(listCidade);
 		} catch (Exception e) {
 			logger.error("Falha ao buscar cidade por nome '" + nome + "'", e);
 			throw new CidadeServiceException("Falha ao buscar cidade por nome '" + nome + "'", e);
 		}
 	}
 
-	public List<Cidade> buscarCidadePorEstado(String estado) throws CidadeServiceException {
+	public List<CidadeDTO> buscarCidadePorEstado(String estado) throws CidadeServiceException {
 		logger.debug("Inicio busca cidade por estado '" + estado + "'");
 		Estado estadoEnum = null;
 		try {
@@ -89,14 +91,14 @@ public class CidadeService {
 
 			logger.debug("Fim busca cidade por estado '" + estado + "'");
 
-			return listCidade;
+			return listCidadeToListCidadeDTO(listCidade);
 		} catch (Exception e) {
 			logger.error("Falha ao buscar cidade por estado '" + estado + "'", e);
 			throw new CidadeServiceException("Falha ao buscar cidade por estado '" + estado + "'", e);
 		}
 	}
 
-	public List<Cidade> buscarCidadePorNomeEstado(Cidade cidade) throws CidadeServiceException {
+	public List<CidadeDTO> buscarCidadePorNomeEstado(Cidade cidade) throws CidadeServiceException {
 		try {
 			logger.debug("Inicio busca cidade por nome e estado: " + cidade);
 
@@ -111,30 +113,32 @@ public class CidadeService {
 
 			logger.debug("Fim busca cidade por nome e estado: " + cidade);
 
-			return listCidade;
+			return listCidadeToListCidadeDTO(listCidade);
 		} catch (Exception e) {
 			logger.error("Falha ao buscar cidade por nome e estado: " + cidade, e);
 			throw new CidadeServiceException("Falha ao buscar cidade por nome e estado: " + cidade + ". " + e.getMessage(), e);
 		}
 	}
 
-	public Cidade salvarCidade(Cidade cidade) throws CidadeServiceException {
+	public CidadeDTO salvarCidade(Cidade cidade) throws CidadeServiceException {
 		logger.debug("Inicio salva " + cidade);
-		
-		List<Cidade> listaCidade = buscarCidadePorNomeEstado(cidade);
-		
-		if(listaCidade.size() > 0) {
-			throw new CidadeServiceException("Não é possível salvar a mesma " + cidade);
-		}
 		
 		try {
 			Cidade salva = cidadeRepository.save(cidade);
 			logger.debug("Fim salva " + cidade);
-			return salva;
+			return CidadeDTO.fromDomain(salva);
 		} catch (Exception e) {
 			logger.error("Falha ao salvar " + cidade.toString(), e);
 			throw new CidadeServiceException("Falha ao salvar " + cidade + ". " + e.getMessage(), e);
 		}
+	}
+	
+	private List<CidadeDTO> listCidadeToListCidadeDTO(List<Cidade> listaCidade) {
+		if (listaCidade == null) {
+			return null;
+		}
+		
+		return listaCidade.stream().map(c -> CidadeDTO.fromDomain(c)).collect(Collectors.toList());
 	}
 
 }

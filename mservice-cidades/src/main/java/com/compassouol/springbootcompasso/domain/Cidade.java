@@ -27,6 +27,13 @@ public class Cidade {
 		super();
 	}
 
+	public Cidade(Long id, String nome, Estado estado) {
+		super();
+		this.id = id;
+		this.nome = nome;
+		this.estado = estado;
+	}
+
 	public Cidade(String nome, Estado estado) {
 		super();
 		this.nome = nome;
