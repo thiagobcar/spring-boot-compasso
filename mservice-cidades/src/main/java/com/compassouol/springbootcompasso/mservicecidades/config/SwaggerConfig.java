@@ -22,7 +22,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket configureControllerPackageAndConvertors() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("com.compassouol.springbootcompasso.controller")).build()
+				.apis(RequestHandlerSelectors.basePackage("com.compassouol.springbootcompasso.mservicecidades.controller")).build()
 				.apiInfo(apiInfo());
 	}
 

@@ -24,7 +24,7 @@ public class CidadeController {
 	private CidadeService cidadeService;
 
 	@PostMapping(value = "/cidade")
-	public ResponseEntity<CidadeDTO> salvarCidade(@RequestBody Cidade cidade) {
+	public ResponseEntity<CidadeDTO> salvarCidade(@RequestBody CidadeDTO cidade) {
 		try {
 			CidadeDTO salva = cidadeService.salvarCidade(cidade);
 			return ResponseEntity.ok(salva);

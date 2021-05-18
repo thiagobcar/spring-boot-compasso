@@ -98,7 +98,8 @@ public class CidadeService {
 		}
 	}
 
-	public List<CidadeDTO> buscarCidadePorNomeEstado(Cidade cidade) throws CidadeServiceException {
+	public List<CidadeDTO> buscarCidadePorNomeEstado(CidadeDTO cidadeDTO) throws CidadeServiceException {
+		Cidade cidade = CidadeDTO.toDomain(cidadeDTO);
 		try {
 			logger.debug("Inicio busca cidade por nome e estado: " + cidade);
 
@@ -120,7 +121,8 @@ public class CidadeService {
 		}
 	}
 
-	public CidadeDTO salvarCidade(Cidade cidade) throws CidadeServiceException {
+	public CidadeDTO salvarCidade(CidadeDTO cidadeDTO) throws CidadeServiceException {
+		Cidade cidade = CidadeDTO.toDomain(cidadeDTO);
 		logger.debug("Inicio salva " + cidade);
 		
 		if(cidade == null) {
@@ -133,7 +135,7 @@ public class CidadeService {
 			throw new CidadeServiceException("Estado da cidade deve ser informado.");
 		}
 		
-		List<CidadeDTO> buscarCidadePorNomeEstado = buscarCidadePorNomeEstado(cidade);
+		List<CidadeDTO> buscarCidadePorNomeEstado = buscarCidadePorNomeEstado(cidadeDTO);
 		if (buscarCidadePorNomeEstado.size() > 0) {
 			throw new CidadeServiceException("Cidade '" + cidade.getNome() + "-" + cidade.getEstado() + "' já cadastrada.");
 		}
