@@ -45,10 +45,11 @@ public class ClienteRepositoryTest {
 		try {
 			Cliente cliente = clienteRepository.save(this.cliente);
 			Optional<Cliente> optCliente = clienteRepository.findById(cliente.getId());
-			optCliente.ifPresentOrElse(c -> {
-				assertThat(c).isEqualTo(cliente);
-			}, () -> {
+			if(optCliente.isPresent() == false) {
 				fail("Não foi possível recuperar cliente.");
+			}
+			optCliente.ifPresent(c -> {
+				assertThat(c).isEqualTo(cliente);
 			});
 		} catch (Exception e) {
 			fail("Falha ao incluir cliente.");
@@ -67,10 +68,11 @@ public class ClienteRepositoryTest {
 			if (listCliente.size() > 0) {
 				Optional<Cliente> optCliente = listCliente.stream().filter(c -> walterSalvo.getId().equals(c.getId()))
 						.findFirst();
-				optCliente.ifPresentOrElse(c -> {
+				if(optCliente.isPresent() == false) {
+					fail("Não foi possível recuperar cliente.");
+				}
+				optCliente.ifPresent(c -> {
 					assertThat(c).isEqualTo(walterSalvo);
-				}, () -> {
-					fail("Não foi possível recuperar cliente por nome.");
 				});
 			} else {
 				fail("Não foi possível recuperar cliente por nome.");
@@ -85,10 +87,11 @@ public class ClienteRepositoryTest {
 		try {
 			Cliente cliente = clienteRepository.save(this.cliente);
 			Optional<Cliente> optCliente = clienteRepository.findById(cliente.getId());
-			optCliente.ifPresentOrElse(c -> {
-				assertThat(c).isEqualTo(cliente);
-			}, () -> {
+			if (optCliente.isPresent() == false) {
 				fail("Não foi possível recuperar cliente por id.");
+			}
+			optCliente.ifPresent(c -> {
+				assertThat(c).isEqualTo(cliente);
 			});
 		} catch (Exception e) {
 			fail("Falha ao recuperar cliente por id.");
@@ -100,14 +103,15 @@ public class ClienteRepositoryTest {
 		try {
 			Cliente cliente = clienteRepository.save(this.cliente);
 			Optional<Cliente> optCliente = clienteRepository.findById(cliente.getId());
-			optCliente.ifPresentOrElse(c -> {
+			if (optCliente.isPresent() == false) {
+				fail("Não foi possível recuperar cliente por id.");
+			}
+			optCliente.ifPresent(c -> {
 				clienteRepository.delete(c);
 				Optional<Cliente> optClienteRemovido = clienteRepository.findById(c.getId());
 				optClienteRemovido.ifPresent(cRemovido -> {
 					fail("Falha ao remover cliente.");
 				});
-			}, () -> {
-				fail("Não foi possível recuperar cliente por id.");
 			});
 		} catch (Exception e) {
 			fail("Falha ao recuperar cliente por id.");
@@ -121,19 +125,21 @@ public class ClienteRepositoryTest {
 			Integer idadeOriginal = this.cliente.getIdade();
 			Cliente cliente = clienteRepository.save(this.cliente);
 			Optional<Cliente> optCliente = clienteRepository.findById(cliente.getId());
-			optCliente.ifPresentOrElse(c -> {
+			if (optCliente.isPresent() == false) {
+				fail("Não foi possível recuperar cliente por id.");
+			}
+			optCliente.ifPresent(c -> {
 				c.setNome(c.getNome() + " Alterado");
 				c.setDataNascimento(ChronoUnit.YEARS.addTo(c.getDataNascimento(), 1L));
 				clienteRepository.save(c);
 				Optional<Cliente> optClienteAlterado = clienteRepository.findById(c.getId());
-				optClienteAlterado.ifPresentOrElse(cAlterado -> {
+				if (optClienteAlterado.isPresent() == false) {
+					fail("Falha ao recuperar cliente alterado.");
+				}
+				optClienteAlterado.ifPresent(cAlterado -> {
 					assertThat(cAlterado.getNome()).isNotEqualTo(nomeOriginal);
 					assertThat(cAlterado.getIdade()).isNotEqualTo(idadeOriginal);
-				}, () -> {
-					fail("Falha ao recuperar cliente alterado.");
 				});
-			}, () -> {
-				fail("Não foi possível recuperar cliente por id.");
 			});
 		} catch (Exception e) {
 			fail("Falha ao recuperar cliente por id.");
@@ -146,10 +152,11 @@ public class ClienteRepositoryTest {
 			Integer idadeOriginal = this.cliente.getIdade();
 			Cliente cliente = clienteRepository.save(this.cliente);
 			Optional<Cliente> optCliente = clienteRepository.findById(cliente.getId());
-			optCliente.ifPresentOrElse(c -> {
-				assertThat(c.getIdade()).isEqualTo(idadeOriginal);
-			}, () -> {
+			if (optCliente.isPresent() == false) {
 				fail("Não foi possível recuperar cliente por id.");
+			}
+			optCliente.ifPresent(c -> {
+				assertThat(c.getIdade()).isEqualTo(idadeOriginal);
 			});
 		} catch (Exception e) {
 			fail("Falha ao recuperar cliente por id.");

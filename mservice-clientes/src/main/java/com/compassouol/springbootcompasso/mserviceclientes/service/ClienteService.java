@@ -34,12 +34,14 @@ public class ClienteService {
 		try {
 
 			Optional<Cliente> optCliente = clienteRepository.findById(id);
-
-			optCliente.ifPresentOrElse(c -> {
+			if (optCliente.isPresent() == false) {
+				logger.debug("Cliente com id '" + id + "' nao encontrado");
+			}
+			optCliente.ifPresent(c -> {
 				cliente.set(c);
 				logger.debug("Cliente com id '" + id + "' encontrado");
 				logger.debug(c.toString());
-			}, () -> logger.debug("Cliente com id '" + id + "' nao encontrado"));
+			});
 
 			logger.debug("Fim busca cliente por id '" + id + "'");
 		} catch (Exception e) {
@@ -85,12 +87,13 @@ public class ClienteService {
 		try {
 			logger.debug("Inicio remoção cliente id '" + id + "'");
 			Optional<Cliente> optCliente = clienteRepository.findById(id);
-			optCliente.ifPresentOrElse(c -> {
+			if (optCliente.isPresent() == false) {
+				logger.debug("Cliente com id '" + id + "' não encontrado.");
+			}
+			optCliente.ifPresent(c -> {
 				clienteRepository.delete(c);
 				clienteRemovido.set(c);
 				logger.debug("Cliente " + c + " removido.");
-			}, () -> {
-				logger.debug("Cliente com id '" + id + "' não encontrado.");
 			});
 			logger.debug("Fim remoção cliente id '" + id + "'");
 
@@ -120,7 +123,7 @@ public class ClienteService {
 			throw new ClienteServiceException("Falha ao buscar cliente de id '" + id + "'. " + e.getMessage(), e);
 		}
 
-		if (optCliente.isEmpty()) {
+		if (optCliente.isPresent() == false) {
 			logger.error("Cliente de id '" + id + "' não encontrado.");
 			throw new ClienteServiceException("Cliente de id '" + id + "' não encontrado.");
 		}
@@ -147,7 +150,7 @@ public class ClienteService {
 			throw new ClienteServiceException("Falha ao buscar cliente " + cliente + ". " + e.getMessage(), e);
 		}
 
-		if (optCliente.isEmpty()) {
+		if (optCliente.isPresent() == false) {
 			logger.error("Cliente " + cliente + " não encontrado.");
 			throw new ClienteServiceException("Cliente " + cliente + " não encontrado.");
 		}

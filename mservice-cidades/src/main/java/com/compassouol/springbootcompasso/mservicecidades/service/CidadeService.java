@@ -30,12 +30,14 @@ public class CidadeService {
 		try {
 
 			Optional<Cidade> optCidade = cidadeRepository.findById(id);
-
-			optCidade.ifPresentOrElse(c -> {
+			if (optCidade.isPresent() == false) {
+				logger.debug("Cidade com id '" + id + "' nao encontrada");
+			}
+			optCidade.ifPresent(c -> {
 				cidade.set(c);
 				logger.debug("Cidade com id '" + id + "' encontrada");
 				logger.debug(c.toString());
-			}, () -> logger.debug("Cidade com id '" + id + "' nao encontrada"));
+			});
 
 			logger.debug("Fim busca cidade por id '" + id + "'");
 		} catch (Exception e) {
