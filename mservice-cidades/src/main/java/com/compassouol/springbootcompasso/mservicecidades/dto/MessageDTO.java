@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.dto;
+package com.compassouol.springbootcompasso.mservicecidades.dto;
 
 public class MessageDTO {
 

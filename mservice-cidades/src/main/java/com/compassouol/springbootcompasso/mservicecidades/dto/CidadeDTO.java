@@ -1,7 +1,7 @@
-package com.compassouol.springbootcompasso.dto;
+package com.compassouol.springbootcompasso.mservicecidades.dto;
 
-import com.compassouol.springbootcompasso.domain.Cidade;
-import com.compassouol.springbootcompasso.domain.Estado;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Cidade;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Estado;
 
 public class CidadeDTO extends MessageDTO {
 

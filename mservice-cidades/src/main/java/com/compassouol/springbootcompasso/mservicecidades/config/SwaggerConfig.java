@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.config;
+package com.compassouol.springbootcompasso.mservicecidades.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

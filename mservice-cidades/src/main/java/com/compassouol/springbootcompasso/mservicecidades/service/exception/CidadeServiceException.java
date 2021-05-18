@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.service.exception;
+package com.compassouol.springbootcompasso.mservicecidades.service.exception;
 
 public class CidadeServiceException extends Exception {
 

@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.service;
+package com.compassouol.springbootcompasso.mservicecidades.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.compassouol.springbootcompasso.domain.Cidade;
-import com.compassouol.springbootcompasso.domain.Estado;
-import com.compassouol.springbootcompasso.dto.CidadeDTO;
-import com.compassouol.springbootcompasso.repository.CidadeRepository;
-import com.compassouol.springbootcompasso.service.exception.CidadeServiceException;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Cidade;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Estado;
+import com.compassouol.springbootcompasso.mservicecidades.dto.CidadeDTO;
+import com.compassouol.springbootcompasso.mservicecidades.repository.CidadeRepository;
+import com.compassouol.springbootcompasso.mservicecidades.service.exception.CidadeServiceException;
 
 @Service
 public class CidadeService {

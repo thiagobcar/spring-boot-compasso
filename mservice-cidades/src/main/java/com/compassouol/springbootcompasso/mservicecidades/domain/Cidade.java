@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.domain;
+package com.compassouol.springbootcompasso.mservicecidades.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

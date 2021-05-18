@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.test.integracao;
+package com.compassouol.springbootcompasso.mservicecidades.test.integracao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.compassouol.springbootcompasso.domain.Cidade;
-import com.compassouol.springbootcompasso.domain.Estado;
-import com.compassouol.springbootcompasso.repository.CidadeRepository;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Cidade;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Estado;
+import com.compassouol.springbootcompasso.mservicecidades.repository.CidadeRepository;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
