@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,7 @@ public class CidadeService {
 		}
 	}
 	
+	@Cacheable("cidades")
 	public CidadeDTO buscarCidadePorId(Long id) throws CidadeServiceException {
 		logger.debug("Inicio busca cidade por id '" + id + "'.");
 		CidadeDTO cidadeDTO = null;
