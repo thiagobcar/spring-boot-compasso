@@ -1,9 +1,6 @@
 package com.compassouol.springbootcompasso.mserviceclientes.controller;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.compassouol.springbootcompasso.mserviceclientes.dto.ClienteDTO;
 import com.compassouol.springbootcompasso.mserviceclientes.service.ClienteService;
@@ -30,12 +28,11 @@ public class ClienteController {
 	public ResponseEntity<ClienteDTO> salvarCliente(@RequestBody ClienteDTO dto) {
 		try {
 			ClienteDTO salvo = clienteService.salvarCliente(dto);
-			salvo.setMessage("Cliente salvo com sucesso.");
 			return ResponseEntity.ok(salvo);
 		} catch (ClienteServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ClienteDTO(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ClienteDTO(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
 		}
 	}
 
@@ -43,16 +40,17 @@ public class ClienteController {
 	public ResponseEntity<ClienteDTO> removerCliente(@PathVariable("id") Long id) {
 		try {
 			ClienteDTO removido = clienteService.removerCliente(id);
-			if(removido == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND)
-						.body(new ClienteDTO("Nenhum cliente encontrado com id '" + id + "'."));
+			if (removido == null) {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"Nenhum cliente encontrado com id '" + id + "'.");
 			}
-			removido.setMessage("Cliente removido com sucesso.");
 			return ResponseEntity.ok(removido);
+		} catch (ResponseStatusException e) {
+			throw e;
 		} catch (ClienteServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ClienteDTO(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ClienteDTO(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
 		}
 	}
 
@@ -61,16 +59,17 @@ public class ClienteController {
 			@PathVariable("nome") String nome) {
 		try {
 			ClienteDTO alterado = clienteService.alterarNomeCliente(id, nome);
-			if(alterado == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND)
-						.body(new ClienteDTO("Nenhum cliente encontrado com id '" + id + "'."));
+			if (alterado == null) {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"Nenhum cliente encontrado com id '" + id + "'.");
 			}
-			alterado.setMessage("Nome do cliente alterado com sucesso.");
 			return ResponseEntity.ok(alterado);
+		} catch (ResponseStatusException e) {
+			throw e;
 		} catch (ClienteServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ClienteDTO(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ClienteDTO(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
 		}
 	}
 
@@ -79,16 +78,16 @@ public class ClienteController {
 		try {
 			List<ClienteDTO> listaClientes = clienteService.buscarClientePorNome(nome);
 			if (listaClientes.size() == 0) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Stream
-						.of(new ClienteDTO("Nenhum cliente encontrado com nome '" + nome + "'.")).collect(toList()));
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"Nenhum cliente encontrado com nome '" + nome + "'.");
 			}
 			return ResponseEntity.ok(listaClientes);
+		} catch (ResponseStatusException e) {
+			throw e;
 		} catch (ClienteServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT)
-					.body(Stream.of(new ClienteDTO(e.getMessage())).collect(toList()));
+			throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(Stream.of(new ClienteDTO(e.getMessage())).collect(toList()));
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
 		}
 	}
 
@@ -97,14 +96,16 @@ public class ClienteController {
 		try {
 			ClienteDTO clientePorId = clienteService.buscarClientePorId(id);
 			if (clientePorId == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND)
-						.body(new ClienteDTO("Nenhum cliente encontrado com id '" + id + "'."));
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"Nenhum cliente encontrado com id '" + id + "'.");
 			}
 			return ResponseEntity.ok(clientePorId);
+		} catch (ResponseStatusException e) {
+			throw e;
 		} catch (ClienteServiceException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ClienteDTO(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ClienteDTO(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
 		}
 	}
 

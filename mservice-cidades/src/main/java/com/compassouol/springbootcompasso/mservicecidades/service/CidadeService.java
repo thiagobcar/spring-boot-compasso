@@ -123,6 +123,21 @@ public class CidadeService {
 	public CidadeDTO salvarCidade(Cidade cidade) throws CidadeServiceException {
 		logger.debug("Inicio salva " + cidade);
 		
+		if(cidade == null) {
+			throw new CidadeServiceException("Cidade deve ser informada.");
+		}
+		if(cidade.getNome() == null || cidade.getNome().trim().isEmpty()) {
+			throw new CidadeServiceException("Nome da cidade deve ser informado.");
+		}
+		if(cidade.getEstado() == null) {
+			throw new CidadeServiceException("Estado da cidade deve ser informado.");
+		}
+		
+		List<CidadeDTO> buscarCidadePorNomeEstado = buscarCidadePorNomeEstado(cidade);
+		if (buscarCidadePorNomeEstado.size() > 0) {
+			throw new CidadeServiceException("Cidade '" + cidade.getNome() + "-" + cidade.getEstado() + "' já cadastrada.");
+		}
+		
 		try {
 			Cidade salva = cidadeRepository.save(cidade);
 			logger.debug("Fim salva " + cidade);

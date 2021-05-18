@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.mserviceclientes.service.exception;
+package com.compassouol.springbootcompasso.mserviceclientes.service;
 
 import java.net.URI;
 import java.util.List;
@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.compassouol.springbootcompasso.mserviceclientes.dto.CidadeDTO;
+import com.compassouol.springbootcompasso.mserviceclientes.service.exception.CidadeServiceException;
 
 @Service
 public class CidadeService {
@@ -23,8 +24,8 @@ public class CidadeService {
 	@Value("${cidades.service.name}")
 	private String cidadesServiceName;
 	
-	@Value("${cidades.service.buscarPorId}")
-	private String cidadesBuscarPorId;
+	@Value("${cidades.service.buscar_por_id}")
+	private String cidadesServiceBuscarPorId;
 	
 	@Autowired
 	private DiscoveryClient discoveryClient;
@@ -34,29 +35,34 @@ public class CidadeService {
 	
 	private Logger logger = LoggerFactory.getLogger(CidadeService.class);
 	
-	public URI getCidadesServiceURL() {
-		List<ServiceInstance> serviceInstances = discoveryClient.getInstances(cidadesServiceName);
-		ServiceInstance serviceInstance = serviceInstances.get(0);
-		return serviceInstance.getUri();
+	private URI getCidadesServiceURL() throws CidadeServiceException {
+		try {			
+			List<ServiceInstance> serviceInstances = discoveryClient.getInstances(cidadesServiceName);
+			ServiceInstance serviceInstance = serviceInstances.stream().findFirst().get();
+			return serviceInstance.getUri();
+		} catch (Exception e) {
+			logger.error("Falha no service discovery para '"+cidadesServiceName+"'. " + e.getMessage(), e);
+			throw new CidadeServiceException("Falha no service discovery para '"+cidadesServiceName+"'. " + e.getMessage());
+		}
 	}
 	
-	public CidadeDTO buscarCidadePorId(Long id) {
+	public CidadeDTO buscarCidadePorId(Long id) throws CidadeServiceException {
 		logger.debug("Inicio busca cidade por id '" + id + "'.");
 		CidadeDTO cidadeDTO = null;
+		URI cidadesServiceURL = getCidadesServiceURL();
 		try {			
-			ResponseEntity<CidadeDTO> entity = restTemplate.getForEntity(getCidadesServiceURL() + cidadesBuscarPorId + id, CidadeDTO.class);
+			ResponseEntity<CidadeDTO> entity = restTemplate.getForEntity(cidadesServiceURL + cidadesServiceBuscarPorId + id, CidadeDTO.class);
 			if(entity.getStatusCode() == HttpStatus.OK) {				
 				cidadeDTO = entity.getBody();
 			} else {
-				cidadeDTO = new CidadeDTO("Cidade id '" + id + "' não encontrada.");
-				cidadeDTO.setId(id);
 				logger.warn("Cidade id '" + id + "' não encontrada.");
+				throw new CidadeServiceException("Cidade id '" + id + "' não encontrada.");
 			}
 			logger.debug("Fim busca cidade por id '" + id + "'.");
 		} catch (HttpClientErrorException e) {
-			cidadeDTO = new CidadeDTO("Falha ao buscar cidade por id '" + id + "'. " + e.getMessage());
-			cidadeDTO.setId(id);
+			cidadeDTO = new CidadeDTO(id, null, null);
 			logger.error("Falha ao buscar cidade por id '" + id + "'. " + e.getMessage(), e);
+			throw new CidadeServiceException("Falha ao buscar cidade por id '" + id + "'. " + e.getMessage());
 		}
 		
 		return cidadeDTO;
