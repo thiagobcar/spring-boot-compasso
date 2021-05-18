@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.mserviceclientes.serviceregistry;
+package com.compassouol.springbootcompasso.serviceregistry;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

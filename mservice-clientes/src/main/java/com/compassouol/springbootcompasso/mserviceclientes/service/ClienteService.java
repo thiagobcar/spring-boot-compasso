@@ -14,7 +14,7 @@ import com.compassouol.springbootcompasso.mserviceclientes.domain.Cliente;
 import com.compassouol.springbootcompasso.mserviceclientes.dto.CidadeDTO;
 import com.compassouol.springbootcompasso.mserviceclientes.dto.ClienteDTO;
 import com.compassouol.springbootcompasso.mserviceclientes.repository.ClienteRepository;
-import com.compassouol.springbootcompasso.mserviceclientes.service.exception.CidadeService;
+import com.compassouol.springbootcompasso.mserviceclientes.service.exception.CidadeServiceException;
 import com.compassouol.springbootcompasso.mserviceclientes.service.exception.ClienteServiceException;
 
 @Service
@@ -34,12 +34,14 @@ public class ClienteService {
 		try {
 
 			Optional<Cliente> optCliente = clienteRepository.findById(id);
-
-			optCliente.ifPresentOrElse(c -> {
+			if (optCliente.isPresent() == false) {
+				logger.debug("Cliente com id '" + id + "' nao encontrado");
+			}
+			optCliente.ifPresent(c -> {
 				cliente.set(c);
 				logger.debug("Cliente com id '" + id + "' encontrado");
 				logger.debug(c.toString());
-			}, () -> logger.debug("Cliente com id '" + id + "' nao encontrado"));
+			});
 
 			logger.debug("Fim busca cliente por id '" + id + "'");
 		} catch (Exception e) {
@@ -85,12 +87,13 @@ public class ClienteService {
 		try {
 			logger.debug("Inicio remoção cliente id '" + id + "'");
 			Optional<Cliente> optCliente = clienteRepository.findById(id);
-			optCliente.ifPresentOrElse(c -> {
+			if (optCliente.isPresent() == false) {
+				logger.debug("Cliente com id '" + id + "' não encontrado.");
+			}
+			optCliente.ifPresent(c -> {
 				clienteRepository.delete(c);
 				clienteRemovido.set(c);
 				logger.debug("Cliente " + c + " removido.");
-			}, () -> {
-				logger.debug("Cliente com id '" + id + "' não encontrado.");
 			});
 			logger.debug("Fim remoção cliente id '" + id + "'");
 
@@ -120,7 +123,7 @@ public class ClienteService {
 			throw new ClienteServiceException("Falha ao buscar cliente de id '" + id + "'. " + e.getMessage(), e);
 		}
 
-		if (optCliente.isEmpty()) {
+		if (optCliente.isPresent() == false) {
 			logger.error("Cliente de id '" + id + "' não encontrado.");
 			throw new ClienteServiceException("Cliente de id '" + id + "' não encontrado.");
 		}
@@ -147,7 +150,7 @@ public class ClienteService {
 			throw new ClienteServiceException("Falha ao buscar cliente " + cliente + ". " + e.getMessage(), e);
 		}
 
-		if (optCliente.isEmpty()) {
+		if (optCliente.isPresent() == false) {
 			logger.error("Cliente " + cliente + " não encontrado.");
 			throw new ClienteServiceException("Cliente " + cliente + " não encontrado.");
 		}
@@ -163,6 +166,7 @@ public class ClienteService {
 	}
 
 	public Cliente salvarCliente(Cliente cliente) throws ClienteServiceException {
+		validaDadosCliente(cliente);
 		try {
 			logger.debug("Inicio salva " + cliente);
 			Cliente salva = clienteRepository.save(cliente);
@@ -174,15 +178,42 @@ public class ClienteService {
 		}
 	}
 
+	private void validaDadosCliente(Cliente clienteSalvar) throws ClienteServiceException {
+		if(clienteSalvar == null) {
+			throw new ClienteServiceException("Cliente deve ser informado.");
+		}
+		if(clienteSalvar.getNome() == null || clienteSalvar.getNome().trim().isEmpty()) {
+			throw new ClienteServiceException("Nome do cliente deve ser informado.");
+		}
+		if(clienteSalvar.getSexo() == null) {
+			throw new ClienteServiceException("Sexo do cliente deve ser informado.");
+		}
+		if(clienteSalvar.getDataNascimento() == null) {
+			throw new ClienteServiceException("Data de nascimento do cliente deve ser informada.");
+		}
+		if(clienteSalvar.getCidade() == null) {
+			throw new ClienteServiceException("Cidade do cliente deve ser informada.");
+		}
+	}
+
 	private ClienteDTO clientDTOFromDomain(Cliente cliente) {
 		if(cliente == null) {
 			return null;
 		}
+
 		ClienteDTO clienteDTO = ClienteDTO.fromDomain(cliente);
+		
+		// Busca de cidade pelo servico
 		if(clienteDTO.getCidade() != null && clienteDTO.getCidade().getId() != null) {
-			CidadeDTO cidadeDTO = cidadeService.buscarCidadePorId(clienteDTO.getCidade().getId());
+			CidadeDTO cidadeDTO = null;
+			try {
+				cidadeDTO = cidadeService.buscarCidadePorId(clienteDTO.getCidade().getId());
+			} catch (CidadeServiceException e) {
+				cidadeDTO = clienteDTO.getCidade();
+			}
 			clienteDTO.setCidade(cidadeDTO);
 		}
+		
 		return clienteDTO;
 	}
 

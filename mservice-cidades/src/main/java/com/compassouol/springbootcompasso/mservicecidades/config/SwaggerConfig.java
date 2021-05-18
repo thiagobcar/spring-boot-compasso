@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.config;
+package com.compassouol.springbootcompasso.mservicecidades.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket configureControllerPackageAndConvertors() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("com.compassouol.springbootcompasso.controller")).build()
+				.apis(RequestHandlerSelectors.basePackage("com.compassouol.springbootcompasso.mservicecidades.controller")).build()
 				.apiInfo(apiInfo());
 	}
 

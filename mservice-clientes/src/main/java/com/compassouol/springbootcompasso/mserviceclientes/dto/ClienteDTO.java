@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import com.compassouol.springbootcompasso.mserviceclientes.domain.Cliente;
 import com.compassouol.springbootcompasso.mserviceclientes.domain.Sexo;
 
-public class ClienteDTO extends MessageDTO {
+public class ClienteDTO {
 
 	private Long id;
 	private String nome;
@@ -26,10 +26,6 @@ public class ClienteDTO extends MessageDTO {
 		this.dataNascimento = dataNascimento;
 		this.idade = idade;
 		this.cidade = cidade;
-	}
-	
-	public ClienteDTO(String message) {
-		super(message);
 	}
 
 	public Long getId() {

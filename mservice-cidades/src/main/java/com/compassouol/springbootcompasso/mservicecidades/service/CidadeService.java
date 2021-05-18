@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.service;
+package com.compassouol.springbootcompasso.mservicecidades.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.compassouol.springbootcompasso.domain.Cidade;
-import com.compassouol.springbootcompasso.domain.Estado;
-import com.compassouol.springbootcompasso.dto.CidadeDTO;
-import com.compassouol.springbootcompasso.repository.CidadeRepository;
-import com.compassouol.springbootcompasso.service.exception.CidadeServiceException;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Cidade;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Estado;
+import com.compassouol.springbootcompasso.mservicecidades.dto.CidadeDTO;
+import com.compassouol.springbootcompasso.mservicecidades.repository.CidadeRepository;
+import com.compassouol.springbootcompasso.mservicecidades.service.exception.CidadeServiceException;
 
 @Service
 public class CidadeService {
@@ -30,12 +30,14 @@ public class CidadeService {
 		try {
 
 			Optional<Cidade> optCidade = cidadeRepository.findById(id);
-
-			optCidade.ifPresentOrElse(c -> {
+			if (optCidade.isPresent() == false) {
+				logger.debug("Cidade com id '" + id + "' nao encontrada");
+			}
+			optCidade.ifPresent(c -> {
 				cidade.set(c);
 				logger.debug("Cidade com id '" + id + "' encontrada");
 				logger.debug(c.toString());
-			}, () -> logger.debug("Cidade com id '" + id + "' nao encontrada"));
+			});
 
 			logger.debug("Fim busca cidade por id '" + id + "'");
 		} catch (Exception e) {
@@ -98,7 +100,8 @@ public class CidadeService {
 		}
 	}
 
-	public List<CidadeDTO> buscarCidadePorNomeEstado(Cidade cidade) throws CidadeServiceException {
+	public List<CidadeDTO> buscarCidadePorNomeEstado(CidadeDTO cidadeDTO) throws CidadeServiceException {
+		Cidade cidade = CidadeDTO.toDomain(cidadeDTO);
 		try {
 			logger.debug("Inicio busca cidade por nome e estado: " + cidade);
 
@@ -120,8 +123,24 @@ public class CidadeService {
 		}
 	}
 
-	public CidadeDTO salvarCidade(Cidade cidade) throws CidadeServiceException {
+	public CidadeDTO salvarCidade(CidadeDTO cidadeDTO) throws CidadeServiceException {
+		Cidade cidade = CidadeDTO.toDomain(cidadeDTO);
 		logger.debug("Inicio salva " + cidade);
+		
+		if(cidade == null) {
+			throw new CidadeServiceException("Cidade deve ser informada.");
+		}
+		if(cidade.getNome() == null || cidade.getNome().trim().isEmpty()) {
+			throw new CidadeServiceException("Nome da cidade deve ser informado.");
+		}
+		if(cidade.getEstado() == null) {
+			throw new CidadeServiceException("Estado da cidade deve ser informado.");
+		}
+		
+		List<CidadeDTO> buscarCidadePorNomeEstado = buscarCidadePorNomeEstado(cidadeDTO);
+		if (buscarCidadePorNomeEstado.size() > 0) {
+			throw new CidadeServiceException("Cidade '" + cidade.getNome() + "-" + cidade.getEstado() + "' já cadastrada.");
+		}
 		
 		try {
 			Cidade salva = cidadeRepository.save(cidade);

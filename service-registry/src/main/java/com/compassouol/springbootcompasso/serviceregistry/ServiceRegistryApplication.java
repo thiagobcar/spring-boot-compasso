@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.mserviceclientes.serviceregistry;
+package com.compassouol.springbootcompasso.serviceregistry;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

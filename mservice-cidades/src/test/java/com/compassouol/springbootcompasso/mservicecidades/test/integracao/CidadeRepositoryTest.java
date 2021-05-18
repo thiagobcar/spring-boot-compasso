@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso.test.integracao;
+package com.compassouol.springbootcompasso.mservicecidades.test.integracao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.compassouol.springbootcompasso.domain.Cidade;
-import com.compassouol.springbootcompasso.domain.Estado;
-import com.compassouol.springbootcompasso.repository.CidadeRepository;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Cidade;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Estado;
+import com.compassouol.springbootcompasso.mservicecidades.repository.CidadeRepository;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -29,19 +29,21 @@ public class CidadeRepositoryTest {
 		Cidade fortaleza = cidadeRepository.save(new Cidade("Fortaleza", Estado.CE));
 		
 		Optional<Cidade> optIguatu = cidadeRepository.findById(iguatu.getId());
-		optIguatu.ifPresentOrElse(c -> {
+		if (optIguatu.isPresent() == false) {
+			fail("Não foi possível recuperar cidade.");
+		}
+		optIguatu.ifPresent(c -> {
 			assertThat(c.getNome()).isEqualTo(iguatu.getNome());
 			assertThat(c.getEstado()).isEqualTo(iguatu.getEstado());
-		}, () -> {
-			fail("Não foi possível recuperar cidade.");
 		});
 		
 		Optional<Cidade> optFortaleza = cidadeRepository.findById(fortaleza.getId());
-		optFortaleza.ifPresentOrElse(c -> {
+		if (optFortaleza.isPresent() == false) {
+			fail("Não foi possível recuperar cidade.");
+		}
+		optFortaleza.ifPresent(c -> {
 			assertThat(c.getNome()).isEqualTo(fortaleza.getNome());
 			assertThat(c.getEstado()).isEqualTo(fortaleza.getEstado());
-		}, () -> {
-			fail("Não foi possível recuperar cidade.");
 		});
 	}
 	
@@ -58,11 +60,12 @@ public class CidadeRepositoryTest {
 		if (listaCidades.size() > 0) {
 			// Filtrando por Id da cidade SantaElena do MA
 			Optional<Cidade> optCidade = listaCidades.stream().filter(c -> c.getId().equals(santaElenaMA.getId())).findFirst();
-			optCidade.ifPresentOrElse(c -> {				
+			if (optCidade.isPresent() == false) {
+				fail("Não foi possível recuperar cidade.");
+			}
+			optCidade.ifPresent(c -> {				
 				assertThat(c.getNome()).isEqualTo(santaElenaMA.getNome());
 				assertThat(c.getEstado()).isEqualTo(santaElenaMA.getEstado());
-			}, () -> {
-				fail("Não foi possível recuperar cidade.");
 			});
 		} else {
 			fail("Não foi possível recuperar cidade.");

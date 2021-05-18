@@ -1,9 +1,9 @@
-package com.compassouol.springbootcompasso.dto;
+package com.compassouol.springbootcompasso.mservicecidades.dto;
 
-import com.compassouol.springbootcompasso.domain.Cidade;
-import com.compassouol.springbootcompasso.domain.Estado;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Cidade;
+import com.compassouol.springbootcompasso.mservicecidades.domain.Estado;
 
-public class CidadeDTO extends MessageDTO {
+public class CidadeDTO {
 
 	private Long id;
 	private String nome;
@@ -11,10 +11,6 @@ public class CidadeDTO extends MessageDTO {
 
 	public CidadeDTO() {
 		super();
-	}
-
-	public CidadeDTO(String message) {
-		super(message);
 	}
 
 	public CidadeDTO(Long id, String nome, String estado) {

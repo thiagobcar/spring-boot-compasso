@@ -1,4 +1,4 @@
-package com.compassouol.springbootcompasso;
+package com.compassouol.springbootcompasso.mservicecidades;
 
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
