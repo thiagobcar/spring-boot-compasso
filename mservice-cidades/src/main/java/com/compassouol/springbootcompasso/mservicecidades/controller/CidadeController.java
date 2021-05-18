@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.compassouol.springbootcompasso.mservicecidades.domain.Cidade;
 import com.compassouol.springbootcompasso.mservicecidades.dto.CidadeDTO;
 import com.compassouol.springbootcompasso.mservicecidades.service.CidadeService;
 import com.compassouol.springbootcompasso.mservicecidades.service.exception.CidadeServiceException;
@@ -58,7 +57,6 @@ public class CidadeController {
 			List<CidadeDTO> cidadesPorNome = cidadeService.buscarCidadePorNome(nome);
 			if (cidadesPorNome.size() == 0) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Não encontrada.");
-			} else {
 			}
 			return ResponseEntity.ok(cidadesPorNome);
 		} catch (ResponseStatusException e) {
